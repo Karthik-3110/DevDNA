@@ -1,0 +1,54 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="devdna-helix" x1="52" y1="20" x2="204" y2="236" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5EE7FF" />
+      <stop offset="0.52" stop-color="#1F8FFF" />
+      <stop offset="1" stop-color="#1B45FF" />
+    </linearGradient>
+    <linearGradient id="devdna-circuit" x1="20" y1="44" x2="188" y2="188" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#64E5FF" />
+      <stop offset="0.55" stop-color="#2F9DFF" />
+      <stop offset="1" stop-color="#2250FF" />
+    </linearGradient>
+  </defs>
+
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path
+      d="M121 18C84 45 78 89 112 121C145 153 145 196 115 238"
+      stroke="url(#devdna-helix)"
+      stroke-width="16"
+    />
+    <path
+      d="M165 18C194 49 192 91 153 127C112 165 107 206 145 238"
+      stroke="url(#devdna-helix)"
+      stroke-width="16"
+    />
+
+    <path d="M48 84H85L102 101H113" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="36" cy="84" r="8" stroke="url(#devdna-circuit)" stroke-width="8" />
+
+    <path d="M38 126H90L103 138H122" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="24" cy="126" r="8" stroke="url(#devdna-circuit)" stroke-width="8" />
+
+    <path d="M42 170H92" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="30" cy="170" r="8" stroke="url(#devdna-circuit)" stroke-width="8" />
+
+    <path d="M52 206L90 198" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="40" cy="206" r="8" stroke="url(#devdna-circuit)" stroke-width="8" />
+
+    <path d="M114 60H165" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="172" cy="60" r="8" fill="url(#devdna-circuit)" />
+
+    <path d="M120 82H149" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="156" cy="82" r="8" fill="url(#devdna-circuit)" />
+
+    <path d="M130 144H157" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="164" cy="144" r="8" fill="url(#devdna-circuit)" />
+
+    <path d="M118 176H177" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="110" cy="176" r="8" fill="url(#devdna-circuit)" />
+
+    <path d="M118 206H165" stroke="url(#devdna-circuit)" stroke-width="8" />
+    <circle cx="172" cy="206" r="8" fill="url(#devdna-circuit)" />
+  </g>
+</svg>
