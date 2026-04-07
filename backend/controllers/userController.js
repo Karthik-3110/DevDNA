@@ -9,6 +9,21 @@ const {
 } = require("../utils/analyzer");
 
 const GITHUB_API_URL = "https://api.github.com";
+const PLACEHOLDER_TOKENS = new Set(["your_github_token", "token", "tokens", "github_token"]);
+
+function getGitHubToken() {
+  const token = String(process.env.GITHUB_TOKEN || "").trim();
+
+  if (!token) {
+    return "";
+  }
+
+  if (PLACEHOLDER_TOKENS.has(token.toLowerCase())) {
+    return "";
+  }
+
+  return token;
+}
 
 function getGitHubHeaders() {
   const headers = {
@@ -16,28 +31,51 @@ function getGitHubHeaders() {
     "User-Agent": "dev-match-app",
   };
 
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  const token = getGitHubToken();
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
 
   return headers;
 }
 
-async function githubRequest(pathname, searchParams = {}) {
+async function githubRequest(pathname, searchParams = {}, options = {}) {
   const url = new URL(`${GITHUB_API_URL}${pathname}`);
 
   Object.entries(searchParams).forEach(([key, value]) => {
     url.searchParams.set(key, String(value));
   });
 
-  const response = await fetch(url, {
-    headers: getGitHubHeaders(),
-  });
+  let response;
+
+  try {
+    response = await fetch(url, {
+      headers: getGitHubHeaders(),
+    });
+  } catch (error) {
+    error.status = 503;
+    error.message = "Could not reach GitHub";
+    throw error;
+  }
+
+  const usedToken = Boolean(getGitHubToken());
+
+  if (response.status === 401 && usedToken && !options.skipAuthRetry) {
+    response = await fetch(url, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "User-Agent": "dev-match-app",
+      },
+    });
+  }
 
   if (!response.ok) {
+    const payload = await response.json().catch(() => null);
     const error = new Error("GitHub request failed");
     error.status = response.status;
     error.rateLimitReset = response.headers.get("x-ratelimit-reset");
+    error.githubMessage = payload?.message || "";
     throw error;
   }
 
@@ -139,9 +177,17 @@ async function getUserProfile(request, response) {
 
     return response.json(profile);
   } catch (error) {
+    console.error("Failed to load GitHub profile:", error.githubMessage || error.message);
+
     if (error.status === 404) {
       return response.status(404).json({
         message: "User not found",
+      });
+    }
+
+    if (error.status === 401) {
+      return response.status(502).json({
+        message: "GitHub authentication failed. Update or remove GITHUB_TOKEN in backend/.env.",
       });
     }
 
@@ -152,6 +198,12 @@ async function getUserProfile(request, response) {
 
       return response.status(429).json({
         message: resetTime ? `GitHub rate limit reached. Try again after ${resetTime}.` : "GitHub rate limit reached.",
+      });
+    }
+
+    if (error.status === 503) {
+      return response.status(503).json({
+        message: "Could not reach GitHub. Check your internet connection and try again.",
       });
     }
 
