@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: devdna
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: CLIENT_ORIGIN
+        value: https://devdna-r9c6.onrender.com
+      - key: MONGO_URI
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+
+  - type: static
+    name: devdna-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: VITE_API_BASE_URL
+        value: https://devdna.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

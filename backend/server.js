@@ -7,20 +7,47 @@ const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
+
+function normalizeOrigin(value) {
+  return String(value || "").trim().replace(/\/+$/, "");
+}
+
+function getAllowedOrigins() {
+  const configuredOrigins =
+    process.env.CLIENT_ORIGIN || "http://localhost:5173,https://devdna-r9c6.onrender.com";
+
+  return configuredOrigins
+    .split(",")
+    .map((origin) => normalizeOrigin(origin))
+    .filter(Boolean);
+}
+
+const allowedOrigins = getAllowedOrigins();
 
 connectDB();
 
 app.use(
   cors({
-    origin: CLIENT_ORIGIN,
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const normalizedRequestOrigin = normalizeOrigin(origin);
+
+      if (allowedOrigins.includes(normalizedRequestOrigin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
   }),
 );
 app.use(express.json());
 
 app.get("/", (request, response) => {
   response.json({
-    message: "Dev Match backend is running",
+    message: "DevDNA backend is running",
   });
 });
 
